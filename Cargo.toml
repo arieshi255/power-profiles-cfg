@@ -1,0 +1,12 @@
+[package]
+name = "power-profiles-cfg"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dbus = "0.9.7"
+ron = "0.8.0"
+serde = { version = "1.0.163", features = ["derive"] }
+signal-hook = "0.3.15"

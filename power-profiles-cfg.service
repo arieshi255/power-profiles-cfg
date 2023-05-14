@@ -1,0 +1,12 @@
+[Unit]
+Description=Power Profile Configuration
+After=multi-user.target display-manager.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/power-profiles-cfg
+Restart=on-failure
+StateDirectory=power-profiles-cfg
+
+[Install]
+WantedBy=graphical.target
