@@ -2,8 +2,24 @@ use std::{time::Duration, fs::{self, OpenOptions}, collections::HashMap, path::{
 use dbus::{blocking::{Connection, stdintf::org_freedesktop_dbus::Properties}, message::MatchRule, ffidisp::stdintf::org_freedesktop_dbus::PropertiesPropertiesChanged, Message, arg};
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
+use clap::{Parser, command, Subcommand};
 
 const CONFIG_FILE: &str = "/etc/power-profiles-cfg/profiles.ron";
+
+/// Search for a pattern in a file and display the lines that contain it.
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+#[command(propagate_version = true)]
+struct Cli {
+  #[command(subcommand)]
+  command: Option<Commands>
+}
+
+#[derive(Subcommand)]
+enum Commands {
+  /// Forcefully re-apply profile configuration
+  Force,
+}
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct ProfileConfig {
@@ -74,6 +90,7 @@ fn save_profiles(config_path: &Path, profiles: &HashMap<String, ProfileConfig>) 
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+  let cli = Cli::parse();
   let config_path = Path::new(CONFIG_FILE);
   let conn = Connection::new_system()?;
   let proxy = conn.with_proxy("net.hadess.PowerProfiles", "/net/hadess/PowerProfiles", Duration::from_millis(5000));
@@ -90,7 +107,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     initial_profiles
   }).expect("No profiles exist");
 
-  if let Some(profile) = profiles.get(&active_profile) {
+  if let (Some(Commands::Force), Some(profile)) = (cli.command, profiles.get(&active_profile)) {
     profile.apply_profile();
   }
 
