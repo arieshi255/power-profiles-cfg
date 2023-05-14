@@ -9,8 +9,10 @@ endif
 build:
 	cargo build $(release)
 
-install:
-	@mkdir $(DESTDIR)@MANDIR@/man1
+man:
+	@mkdir -p $(DESTDIR)@MANDIR@/man1
+
+install: | man
 	@install --preserve-timestamps -D -m 644 power-profiles-cfg.service $(DESTDIR)/usr/lib/systemd/system/power-profiles-cfg.service
 	@install --preserve-timestamps -D -m 755 power-profiles-cfg-sleep.sh $(DESTDIR)/usr/lib/systemd/system-sleep/power-profiles-cfg
 	@install --preserve-timestamps -D -m 755 01power-profiles-cfg $(DESTDIR)/usr/lib/pm-utils/sleep.d/01power-profiles-cfg
