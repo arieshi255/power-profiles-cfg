@@ -1,0 +1,23 @@
+# Maintainer: skyliegirl33
+
+pkgname=power-profiles-cfg
+pkgver=0.1
+pkgrel=1
+pkgdesc='Configurable power profiles for power-profiles-daemon'
+url='https://github.com/Skyliegirl33/power-profiles-cfg'
+license=(MPL2)
+arch=(x86_64)
+depends=(power-profiles-daemon)
+makedepends=(dbus)
+source=(https://github.com/Skyliegirl33/power-profiles-cfg/archive/refs/tags/$pkgver.tar.gz)
+b2sums=('db9e9bc674ca9d7e97e99691a0d78dd7e5d6046e34e51b4da6416d8114db50ff511f1748001c914a14770e022169f1e2fdaf058ec36b5869cc8cbc3869f972bf')
+
+build() {
+  cd $pkgname-$pkgver
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}
