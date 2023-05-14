@@ -10,6 +10,7 @@ That's why I wrote this, which is a companion to power-profiles-daemon (the clos
 ## Installation
 
 ```
+./configure
 make
 sudo make install
 ```
@@ -29,12 +30,17 @@ Initially, the program will query `power-profiles-daemon` for the list of availa
 ```
 {
   "power-saver": (
-    driver: "placeholder",
-    turbo: true,
+    driver: "platform_profile",
+    turbo: false,
     governor: "conservative",
   ),
   "balanced": (
-    driver: "placeholder",
+    driver: "platform_profile",
+    turbo: false,
+    governor: "ondemand",
+  ),
+  "performance": (
+    driver: "platform_profile",
     turbo: true,
     governor: "performance",
   ),
@@ -43,6 +49,11 @@ Initially, the program will query `power-profiles-daemon` for the list of availa
 
 ### Available settings
 Currently, you're only able to set turbo boost and change the governor per profile.
+
+#### Governor
+You can get a list of available governors by running `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors`.
+Any governor from that list can be set.
+
 I plan to add more in the future (CPU frequency, threshold, etc).
 
 I may extend this in the future to also allow differing profiles for AC/battery power (i.e `balanced` for AC and battery could be different).
