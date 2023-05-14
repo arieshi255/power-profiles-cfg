@@ -28,19 +28,22 @@ Initially, the program will query `power-profiles-daemon` for the list of availa
 ### Example configuration
 ```
 {
-  "balanced": (
-    driver: "placeholder",
-    turbo: true,
-  ),
   "power-saver": (
     driver: "placeholder",
     turbo: true,
+    governor: "conservative",
+  ),
+  "balanced": (
+    driver: "placeholder",
+    turbo: true,
+    governor: "performance",
   ),
 }
 ```
 
 ### Available settings
-Currently, you're only able to set whether profiles should enable turbo boost or not. I plan to add more in the future (CPU frequency, governor, threshold, etc).
+Currently, you're only able to set turbo boost and change the governor per profile.
+I plan to add more in the future (CPU frequency, threshold, etc).
 
 I may extend this in the future to also allow differing profiles for AC/battery power (i.e `balanced` for AC and battery could be different).
 

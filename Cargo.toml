@@ -10,3 +10,4 @@ dbus = "0.9.7"
 ron = "0.8.0"
 serde = { version = "1.0.163", features = ["derive"] }
 clap = { version = "4.2.7", features = ["derive"] }
+num_cpus = "1.15.0"
