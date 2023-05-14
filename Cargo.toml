@@ -9,4 +9,3 @@ edition = "2021"
 dbus = "0.9.7"
 ron = "0.8.0"
 serde = { version = "1.0.163", features = ["derive"] }
-signal-hook = "0.3.15"

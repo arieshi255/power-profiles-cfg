@@ -28,14 +28,14 @@ Initially, the program will query `power-profiles-daemon` for the list of availa
 ### Example configuration
 ```
 {
-    "power-saver": (
-        driver: "placeholder",
-        turbo: false,
-    ),
-    "balanced": (
-        driver: "placeholder",
-        turbo: true,
-    ),
+  "balanced": (
+    driver: "placeholder",
+    turbo: true,
+  ),
+  "power-saver": (
+    driver: "placeholder",
+    turbo: true,
+  ),
 }
 ```
 

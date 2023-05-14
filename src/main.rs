@@ -1,8 +1,7 @@
-use std::{time::Duration, fs::{self, OpenOptions}, thread, process::exit, collections::HashMap, path::{Path, PathBuf}, io::Write};
+use std::{time::Duration, fs::{self, OpenOptions}, collections::HashMap, path::{Path}, io::Write};
 use dbus::{blocking::{Connection, stdintf::org_freedesktop_dbus::Properties}, message::MatchRule, ffidisp::stdintf::org_freedesktop_dbus::PropertiesPropertiesChanged, Message, arg};
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
-use signal_hook::{consts::{SIGINT, SIGTERM}, iterator::Signals};
 
 const CONFIG_FILE: &str = "/etc/power-profiles-cfg/profiles.ron";
 
@@ -39,7 +38,7 @@ fn load_profiles(config_path: &Path) -> Option<HashMap<String, ProfileConfig>> {
   }
 }
 
-fn read_profiles(conn: &Connection) -> Option<HashMap<String, ProfileConfig>> {
+fn read_initial_profiles(conn: &Connection) -> Option<HashMap<String, ProfileConfig>> {
   let proxy = conn.with_proxy("net.hadess.PowerProfiles", "/net/hadess/PowerProfiles", Duration::from_millis(5000));
   let read_profiles: Vec<arg::PropMap> = proxy.get("net.hadess.PowerProfiles", "Profiles").ok()?;
   let mut profiles: HashMap<String, ProfileConfig> = HashMap::new();
@@ -60,29 +59,16 @@ fn read_profiles(conn: &Connection) -> Option<HashMap<String, ProfileConfig>> {
   Some(profiles)
 }
 
-fn save_profiles(config_path: PathBuf, profiles: HashMap<String, ProfileConfig>) -> Result<(), Box<dyn std::error::Error>> {
+fn save_profiles(config_path: &Path, profiles: &HashMap<String, ProfileConfig>) -> Result<(), Box<dyn std::error::Error>> {
   let config_dir = config_path.parent().unwrap();
-  let profiles_ron = ron::ser::to_string_pretty(&profiles, PrettyConfig::new())?;
+  let pretty_config = PrettyConfig::new().indentor("  ".to_string());
+  let profiles_ron = ron::ser::to_string_pretty(&profiles, pretty_config)?;
 
   if !config_dir.is_dir() {
     fs::create_dir(config_dir)?;
   }
 
   fs::write(config_path, profiles_ron)?;
-
-  Ok(())
-}
-
-fn setup_signals(config_path: PathBuf, profiles: HashMap<String, ProfileConfig>) -> Result<(), Box<dyn std::error::Error>> {
-  let mut signals = Signals::new([SIGINT, SIGTERM])?;
-
-  thread::spawn(move || {
-    for sig in signals.forever() {
-      println!("Received signal {:?}", sig);
-      _ = save_profiles(config_path.to_owned(), profiles.to_owned());
-      exit(0)
-    }
-  });
 
   Ok(())
 }
@@ -96,13 +82,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
   // check if config file exists
   // if it exists, return it
   // if not, retrieve the available profiles from dbus and return those
-  let profiles = match load_profiles(config_path) {
-    Some(p) => Some(p),
-    None => read_profiles(&conn)
-  };
-  let profiles = profiles.expect("No profiles exist");
-
-  setup_signals(config_path.to_owned(), profiles.to_owned())?;
+  let profiles = load_profiles(config_path).or_else(|| {
+    let initial_profiles = read_initial_profiles(&conn);
+    if let Some(ref profiles) = initial_profiles {
+      _ = save_profiles(config_path, profiles);
+    }
+    initial_profiles
+  }).expect("No profiles exist");
 
   if let Some(profile) = profiles.get(&active_profile) {
     profile.apply_profile();
