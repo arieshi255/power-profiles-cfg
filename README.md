@@ -29,12 +29,17 @@ Initially, the program will query `power-profiles-daemon` for the list of availa
 ```
 {
   "power-saver": (
-    driver: "placeholder",
-    turbo: true,
+    driver: "platform_profile",
+    turbo: false,
     governor: "conservative",
   ),
   "balanced": (
-    driver: "placeholder",
+    driver: "platform_profile",
+    turbo: false,
+    governor: "ondemand",
+  ),
+  "performance": (
+    driver: "platform_profile",
     turbo: true,
     governor: "performance",
   ),
