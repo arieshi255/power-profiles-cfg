@@ -1,31 +1,17 @@
 use std::{time::Duration, path::Path};
+use cli::Cli;
 use dbus::{blocking::{Connection, stdintf::org_freedesktop_dbus::Properties}, message::MatchRule, ffidisp::stdintf::org_freedesktop_dbus::PropertiesPropertiesChanged, Message};
-use clap::{Parser, command};
+use clap::{Parser};
 
 const CONFIG_FILE: &str = "/etc/power-profiles-cfg/profiles.ron";
 
 mod profile;
 mod sysfs_interface;
+mod cli;
 
 #[derive(Debug)]
 pub enum AppError {
   ErrorReadingFile(String)
-}
-
-/// Configurable power profiles for power-profiles-daemon
-#[derive(Parser)]
-#[command(author, version, about, long_about = None)]
-#[command(propagate_version = true)]
-struct Cli {
-  /// Initialize service
-  #[arg(short, long)]
-  init: bool,
-  /// Forcefully re-apply profile configuration
-  #[arg(short, long)]
-  force: bool,
-  /// Reload states (AC on/off, etc)
-  #[arg(short, long)]
-  reload: bool
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
