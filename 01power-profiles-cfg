@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# 01power-profiles-cfg: Re-apply power profile settings
+
+if [ -f /etc/pm/sleep.d/99power-profiles-cfg ]; then
+	continue
+else
+	case "$1" in
+		hibernate|suspend)
+			# Stopping is not required.
+			;;
+		thaw|resume)
+			# Make power-profiles-cfg forcibly re-apply the profile settings
+			if [ -e /usr/lib/power-profiles-cfg ] ; then
+				/usr/lib/power-profiles-cfg --force
+			fi
+			;;
+		*) exit $NA
+			;;
+	esac
+fi

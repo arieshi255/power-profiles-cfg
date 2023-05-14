@@ -2,23 +2,21 @@ use std::{time::Duration, fs::{self, OpenOptions}, collections::HashMap, path::{
 use dbus::{blocking::{Connection, stdintf::org_freedesktop_dbus::Properties}, message::MatchRule, ffidisp::stdintf::org_freedesktop_dbus::PropertiesPropertiesChanged, Message, arg};
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
-use clap::{Parser, command, Subcommand};
+use clap::{Parser, command};
 
 const CONFIG_FILE: &str = "/etc/power-profiles-cfg/profiles.ron";
 
-/// Search for a pattern in a file and display the lines that contain it.
+/// Configurable power profiles for power-profiles-daemon
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 #[command(propagate_version = true)]
 struct Cli {
-  #[command(subcommand)]
-  command: Option<Commands>
-}
-
-#[derive(Subcommand)]
-enum Commands {
+  /// Initialize service
+  #[arg(short, long)]
+  init: bool,
   /// Forcefully re-apply profile configuration
-  Force,
+  #[arg(short, long)]
+  force: bool
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -33,7 +31,7 @@ impl ProfileConfig {
   }
 
   fn apply_profile(&self) {
-    // turbo
+    // Turbo
     let turbo_sysfs = match &self.driver {
       d if d == "intel_pstate" => "/sys/devices/system/cpu/intel_pstate/no_turbo",
       _ => "/sys/devices/system/cpu/cpufreq/boost"
@@ -96,9 +94,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
   let proxy = conn.with_proxy("net.hadess.PowerProfiles", "/net/hadess/PowerProfiles", Duration::from_millis(5000));
   let active_profile: String = proxy.get("net.hadess.PowerProfiles", "ActiveProfile")?;
 
-  // check if config file exists
-  // if it exists, return it
-  // if not, retrieve the available profiles from dbus and return those
+  // Check if config file exists
+  // If it exists, return it
+  // If not, retrieve the available profiles from D-Bus and return those
   let profiles = load_profiles(config_path).or_else(|| {
     let initial_profiles = read_initial_profiles(&conn);
     if let Some(ref profiles) = initial_profiles {
@@ -107,8 +105,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     initial_profiles
   }).expect("No profiles exist");
 
-  if let (Some(Commands::Force), Some(profile)) = (cli.command, profiles.get(&active_profile)) {
-    profile.apply_profile();
+  // Only apply profile on startup if the `init` or `force` command was used
+  if let Some(profile) = profiles.get(&active_profile) {
+    if cli.init || cli.force {
+      profile.apply_profile();
+    }
+  }
+
+  // Only initialize service if the `init` command was used
+  if !cli.init {
+    return Ok(())
   }
 
   let rule = MatchRule::new()
