@@ -7,20 +7,20 @@ exec_prefix_temp=$exec_prefix
 test "${prefix}" = "NONE" && prefix="${ac_default_prefix}"
 test "${exec_prefix}" = "NONE" && exec_prefix='${prefix}'
 
-# Initial value is $exec_prefix/sbin
-sbintemp="${sbindir}"
+# Initial value is $exec_prefix/libexec
+libexectemp="${libexecdir}"
 mantemp="${mandir}"
 
-# Expands to $prefix/sbin
-eval sbintemp=\"${sbintemp}\"
+# Expands to $prefix/libexec
+eval libexectemp=\"${libexectemp}\"
 eval mantemp=\"${mantemp}\"
 # Expands fully
-eval sbintemp=\"${sbintemp}\"
+eval libexectemp=\"${libexectemp}\"
 eval mantemp=\"${mantemp}\"
-SBINDIR=${sbintemp}
+LIBEXECDIR=${libexectemp}
 MANDIR=${mantemp}
 
-AC_SUBST(SBINDIR)
+AC_SUBST(LIBEXECDIR)
 AC_SUBST(MANDIR)
 
 AC_CONFIG_FILES([

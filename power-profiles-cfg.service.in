@@ -4,7 +4,7 @@ After=power-profiles-daemon.service
 
 [Service]
 Type=simple
-ExecStart=@SBINDIR@/power-profiles-cfg --init
+ExecStart=@LIBEXECDIR@/power-profiles-cfg --init
 Restart=on-failure
 StateDirectory=power-profiles-cfg
 

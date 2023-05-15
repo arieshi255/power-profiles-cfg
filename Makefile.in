@@ -16,7 +16,7 @@ install: | man
 	@install --preserve-timestamps -D -m 644 power-profiles-cfg.service $(DESTDIR)/usr/lib/systemd/system/power-profiles-cfg.service
 	@install --preserve-timestamps -D -m 755 power-profiles-cfg-sleep.sh $(DESTDIR)/usr/lib/systemd/system-sleep/power-profiles-cfg
 	@install --preserve-timestamps -D -m 755 01power-profiles-cfg $(DESTDIR)/usr/lib/pm-utils/sleep.d/01power-profiles-cfg
-	@install --preserve-timestamps -D -m 755 target/release/$(PROG) $(DESTDIR)@SBINDIR@/$(PROG)
+	@install --preserve-timestamps -D -m 755 target/release/$(PROG) $(DESTDIR)@LIBEXECDIR@/$(PROG)
 	@install --preserve-timestamps -g 0 -o 0 -m 0644 assets/power-profiles-cfg.1 $(DESTDIR)@MANDIR@/man1/power-profiles-cfg.1
 	@gzip $(DESTDIR)@MANDIR@/man1/power-profiles-cfg.1
 	@printf "%s\n" "Install completed."
@@ -25,6 +25,6 @@ uninstall:
 	@rm -f $(DESTDIR)/usr/lib/systemd/system/power-profiles-cfg.service
 	@rm -f $(DESTDIR)/usr/lib/systemd/system-sleep/power-profiles-cfg
 	@rm -f $(DESTDIR)/usr/lib/pm-utils/sleep.d/01power-profiles-cfg
-	@rm -f $(DESTDIR)@SBINDIR@/$(PROG)
+	@rm -f $(DESTDIR)@LIBEXECDIR@/$(PROG)
 	@rm -f $(DESTDIR)@MANDIR@/man1/power-profiles-cfg.1.gz
 	@printf "%s\n" "Uninstall completed."

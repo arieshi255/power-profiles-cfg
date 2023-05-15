@@ -8,8 +8,8 @@ case $1/$2 in
     ;;
   post/*)
     # Make power-profiles-cfg forcibly re-apply the profile settings.
-    if [ -e @SBINDIR@/power-profiles-cfg ] ; then
-      @SBINDIR@/power-profiles-cfg --force
+    if [ -e @LIBEXECDIR@/power-profiles-cfg ] ; then
+      @LIBEXECDIR@/power-profiles-cfg --force
     fi
     ;;
 esac
