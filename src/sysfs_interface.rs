@@ -21,8 +21,8 @@ pub fn write_governor_state(profile: &ProfileConfig) {
   }
 }
 
-pub fn read_turbo_state(profile: &ProfileConfig) -> Result<String, AppError> {
-  let turbo_sysfs = match &profile.driver {
+pub fn read_turbo_state(driver: &str) -> Result<bool, AppError> {
+  let turbo_sysfs = match driver {
     d if d == "intel_pstate" => "/sys/devices/system/cpu/intel_pstate/no_turbo",
     _ => "/sys/devices/system/cpu/cpufreq/boost"
   };
@@ -30,7 +30,17 @@ pub fn read_turbo_state(profile: &ProfileConfig) -> Result<String, AppError> {
   let mut file = OpenOptions::new().read(true).open(turbo_sysfs).expect("Error opening sysfs file");
   _ = file.read_to_end(&mut buffer);
 
-  String::from_utf8(buffer).map(|v| v.trim().to_string()).map_err(|e| AppError::ErrorReadingFile(e.to_string()))
+  let output = String::from_utf8(buffer)
+    .map(|v| v.trim().to_string()).map_err(|e| AppError::ErrorReadingFile(e.to_string()))?;
+
+  // Invert state for intel_pstate
+  let state = match output.as_str() {
+    "0" => driver == "intel_pstate",
+    "1" => driver != "intel_pstate",
+    _ => true
+  };
+
+  Ok(state)
 }
 
 pub fn write_turbo_state(profile: &ProfileConfig) {

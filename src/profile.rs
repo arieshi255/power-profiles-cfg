@@ -15,8 +15,8 @@ pub struct ProfileConfig {
 }
 
 impl ProfileConfig {
-  fn new(driver: String, governor: String) -> Self {
-    Self { driver, turbo: true, governor }
+  fn new(driver: String, turbo: bool, governor: String) -> Self {
+    Self { driver, turbo, governor }
   }
 
   pub fn apply_profile(&self) {
@@ -71,9 +71,10 @@ impl ProfileManager {
       let driver = p.get("Driver")?;
       let profile = profile.0.as_str()?;
       let driver = driver.0.as_str()?;
+      let turbo = sysfs_interface::read_turbo_state(driver).unwrap_or(true);
       let governor = sysfs_interface::read_governor_state().unwrap_or(String::from("ondemand"));
 
-      profiles.insert(profile.to_string(), ProfileConfig::new(driver.to_string(), governor));
+      profiles.insert(profile.to_string(), ProfileConfig::new(driver.to_string(), turbo, governor));
     }
 
     if profiles.is_empty() {
