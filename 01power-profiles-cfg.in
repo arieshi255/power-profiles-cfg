@@ -11,8 +11,8 @@ else
 			;;
 		thaw|resume)
 			# Make power-profiles-cfg forcibly re-apply the profile settings
-			if [ -e /usr/lib/power-profiles-cfg ] ; then
-				/usr/lib/power-profiles-cfg --force
+			if [ -e @SBINDIR@/power-profiles-cfg ] ; then
+				@SBINDIR@/power-profiles-cfg --force
 			fi
 			;;
 		*) exit $NA

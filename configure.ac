@@ -26,6 +26,8 @@ AC_SUBST(MANDIR)
 AC_CONFIG_FILES([
   Makefile
   power-profiles-cfg.service
+  01power-profiles-cfg
+  power-profiles-cfg-sleep.sh
 ])
 
 AC_OUTPUT

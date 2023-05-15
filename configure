@@ -1744,7 +1744,7 @@ MANDIR=${mantemp}
 
 
 
-ac_config_files="$ac_config_files Makefile power-profiles-cfg.service"
+ac_config_files="$ac_config_files Makefile power-profiles-cfg.service 01power-profiles-cfg power-profiles-cfg-sleep.sh"
 
 
 cat >confcache <<\_ACEOF
@@ -2449,6 +2449,8 @@ do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "power-profiles-cfg.service") CONFIG_FILES="$CONFIG_FILES power-profiles-cfg.service" ;;
+    "01power-profiles-cfg") CONFIG_FILES="$CONFIG_FILES 01power-profiles-cfg" ;;
+    "power-profiles-cfg-sleep.sh") CONFIG_FILES="$CONFIG_FILES power-profiles-cfg-sleep.sh" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
